@@ -1,62 +1,28 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import App from './app/App';
+import App from './app/containers/App';
 import registerServiceWorker from './registerServiceWorker';
 import { createStore, combineReducers, applyMiddleware } from 'redux';
 import { Provider } from 'react-redux';
-
-const mathReducer = (state = {
-    result: 1,
-    lastValues: []
-}, action) => {
-    switch (action.type) {
-        case 'INCREMENT':
-            state = {
-                ...state,
-                result: state.result + action.payload,
-                lastValues: [...state.lastValues, action.payload]
-            }
-            break;
-        case 'DECREMENT':
-            state = {
-                ...state,
-                result: state.result - action.payload,
-                lastValues: [...state.lastValues, action.payload]
-            }
-            break;
-    }
-    return state;
-}
-
-const userReducer = (state = [{
-    firstName: "Sunil",
-    lastName: "Saini",
-    email: "vishnu.saini@email.com",
-    hobbies: ["Table tennis", "Music"]
-}], action) => {
-    switch (action.type) {
-        case 'ADD_USER':
-            state.push(action.payload);
-            break;
-    }
-    return state;
-}
+import counterReducer from './app/reducers/counterReducer';
+import userReducer from './app/reducers/userReducer';
+import logger from 'redux-logger';
 
 const myCustomLogger = (store) => (next) => (action) => {
     console.log("Logged Action : ", action);
     next(action);
 }
 
-const store = createStore(combineReducers({ math: mathReducer, user: userReducer }), {}, applyMiddleware(myCustomLogger));
+const store = createStore(combineReducers({ counter: counterReducer, user: userReducer }), {}, applyMiddleware(logger,myCustomLogger));
 
 store.subscribe(() =>
     console.log("Store updated ", store.getState())
 )
 
-store.dispatch({ type: 'INCREMENT', payload: 19 });
-store.dispatch({ type: 'INCREMENT', payload: 71 });
-store.dispatch({ type: 'DECREMENT', payload: 30 });
+store.dispatch({ type: 'COUNT_UP', payload: 2 });
+store.dispatch({ type: 'COUNT_DOWN', payload: 3 });
+store.dispatch({ type: 'COUNT_DOWN', payload: 4 });
 store.dispatch({
     type: 'ADD_USER', payload: {
         firstName: "Mary",
